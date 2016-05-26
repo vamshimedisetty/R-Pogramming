@@ -1,0 +1,19 @@
+## Vamshi Medisetty - Assignment 3
+
+# Let us import the package MASS
+
+library(MASS)                           # This loads the package MASS
+library(help = MASS)                    # To check information about package MASS
+View(airquality)                        # To view the data of dataframe airquality
+
+mean(airquality$Temp)                   # This gives the mean value of Temp in dataframe airquality
+median(airquality$Temp)                 # This gives the median value of Temp in dataframe airquality
+quantile(airquality$Temp,probs = 0.75)  # This gives the 75th percentile value of Temp in dataframe airquality
+
+
+S1=airquality[airquality$Month == 6,]   # This creates a subset S1 of airquality dataframe - contains all days in month of June
+View(S1)                                # To view the contents (data) of subset dataframe S1
+
+plot(x=S1$Temp,y=S1$Solar.R)            # This plots Temp and Solar.R on X and Y axes of dataframe S1
+
+median(S1$Solar.R)                      # The median value of Solar.R in dataframe S1 will be displayed.
