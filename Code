@@ -1,0 +1,40 @@
+
+#Assignment 1
+
+## Question 1
+
+# Creating a vector x 
+
+x = c(rnorm(1000)) # This statement creates a vector and also assignes values
+                   # The function used generates 1000 random normal values
+x                  #This statement prints the value of x 
+
+# Creating variable y 
+
+y = c(runif(1000)) #This statement creates and also assigns values
+                   #The function used generates 1000 random uniform values
+y                  #This statement prints the value of y
+
+## Let us try to plot the graph
+
+plot(x=x,y=y,pch=7,col='blue',xlab = 'normal',ylab = 'uniform') # x=x, y=y ensure that variables x and y are taken in the respective axes.
+                                                                # pch = 7 ensures the shape of points that we need
+                                                                # col = 'Blue' ensures the colour of our choice (blue).
+                                                                # xlab and ylab are used to label our respective axes.
+
+
+## Question 2
+## Sub-question a
+
+a = rep(c("x","y","z"),6) #The vector c("x","y","z") is repeated six times and assigned to variable 'a' (vector)
+                          #The function rep with arguments vector and 6 ensures the desired content
+a                         #This statement prints out the value of variable a
+
+## Sub-question b
+
+b = rep(c("x","y","z"),c(5,2,3)) #The elements of vector c("x","y","z") - first variable is repeated 5 times, second varable - 2 times , third variable - 3 times
+                                 #The function rep with arguments vector and c(5,2,3) ensures the desired content
+                                 #The value is assigned to the variable 'b'
+b                                #This statement prints out the value of variable 'b'
+
+
