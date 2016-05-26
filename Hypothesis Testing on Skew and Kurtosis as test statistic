@@ -1,0 +1,44 @@
+## Vamshi Medisetty
+## UConn Id : 2348122
+
+
+admit <- read.csv('C:/Users/vamsh/Desktop/R/admit.csv') ## Read the file
+
+head(admit)
+
+plot(density(admit$gre))
+
+install.packages('moments')
+library(moments)
+mean(admit$gre)
+
+tstat = kurtosis(admit$gre)  ## this is our test statistic
+
+##Let us frame hypothesis:
+  #Ho :  kurtosis = 3
+  #Ha : The Kurtosis is not equal to 3.
+
+# Imaging population, draw random samples
+# Calculate stat o interest
+
+f1 = function()
+{
+  s1 = rnorm(length(admit$gre),mean=mean(dmit$gre),sd = sd(admit$gre))  ## Use the best mean and sd available
+  sstat = kurtosis(s1)
+  return(sstat)
+}
+
+sdist = replicate(10000,f1()) # replicate the function
+sdist 
+
+plot(density(sdist))   # plot the function to check hypothesis and p-values
+polygon(density(sdist),col='green')
+abline(v=tstat,col='red')
+abline(v= 6 -tstat,col='red') # This line is the mirror image over the mean - on the other end
+
+x = sdist[sdist<=tstat | sdist>=(3+3-tstat)] ## tstat line and the mirror image of it over mean - sice this is 2 taile test
+x
+pvalue = length(x)/10000
+pvalue ## 0.1409
+       ## We observe p-value is greater than 0.05 (alpha)
+       ## Hence we accepth the null hypothesis.
