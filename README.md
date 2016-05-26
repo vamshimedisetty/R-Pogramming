@@ -1,2 +1,2 @@
-# Basic-R-Pogramming
-This is a beginning to the 'R' programming
+# R-Pogramming
+All my 'R' codes are placed in this repository.
