@@ -1,0 +1,19 @@
+## Vamshi Medisetty
+## Assignment 5
+
+# Let's create variables x and y
+x = c(1:100) # Vector x contains values from 1 to 100
+y = sqrt(x)  # vector y contains square root of values of vector x
+
+# Let us create labels for the plot
+label_top = expression(paste("y= " , alpha[0] + alpha[1]*x+alpha[2]*x^5)) # The label in the top which contains this equation
+                                                                          # Alpha function gives the greek alphabet alpha
+                                                                          # This expression gives the equation given in the question for top label
+label1 # To check what the variable label1 contains.
+
+label_bottom = expression(paste("E=","mc^2")) # The label in the bottom contains this equation (E= mc2)
+label2                                        # To check the equation in label 2
+
+plot(x=x,y=y,type="l",col='blue') # This plots variable x on X-axis and variable y on Y-axis
+text(40,2,label_bottom)           # This defines the position of bottom label
+text(16,8,label_top)              # This defines the position of top label
