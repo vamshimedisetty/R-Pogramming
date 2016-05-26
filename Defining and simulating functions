@@ -1,0 +1,137 @@
+## Vamshi Medisetty ##
+## UConn Id : 2348122 ##
+
+
+## Question 1
+
+
+hypotenuse = function(a,b)       # This creates a function to calclate and return the hypotenuse value. The arguments are lengths of other two sides.
+{
+  h = sqrt((a^2)+(b^2))          # This calculates the hypotenuse side's length and assigns it to 'h'
+  return(h)                      # This returns the value of 'h'
+}
+
+# Let us test the function with two sample inputs
+
+h1 = hypotenuse(3,4)            # Here the other two sides are 3,4  
+h1                              # This displays the length of hypotenuse
+h2 = hypotenuse(11,13)          # Here the other two sides are 11,13
+h2                              # This displays the length of hypotenuse
+
+
+
+## Question 2
+
+
+median_diff = function(a)          # This defines the function which calculates the upper and lower median difference
+{
+  a_low = a[a<mean(a)]             # This creates a subset vector of all the elements below the mean in vector 'a'
+  med_low = median(a_low)          # This calculates the value of median of the vector 'a_low'
+  a_high = a[a>mean(a)]            # This creates a subset vector of all the elements above the mean in vector 'a'
+  med_high = median(a_high)        # This calculates the value of median of the vector 'a_high'
+  diff_median = med_high - med_low # The difference in both the medians is calculated and assigned to variable diff_mean
+  return(diff_median)              # This returns the value of diff_mean
+}
+
+# Let us test the function 'median_diff' with two sample inputs
+
+m1 = median_diff(c(1,2,3,4,5,6,7,8,9,10))  # The input vector here is numbers from 1 to 10.
+m1                                         # This displays the value of medians' difference
+m2 = median_diff(rnorm(1000))              # The input vector here is 1000 random normal values
+m2                                         # This displays the value of medians' difference
+
+## Question 3
+
+
+median_running = function(a)           # This creates a function called median_running which takes a vector as argument 
+{
+   run_median = 0                      # This creates a vector which is initialized to zero. We'll add the running median values to this vector           
+   for(i in 1:length(a))               # This initilizes a for loop which starts from 1 and extends till length(a)
+   {
+     run_median[i]<-median(a[1]:a[i])  # For each value of i, the median value till 'i'th place is calculated in vector a and stored in vector 'run_med'
+     # print(run_med[i])               # We can print every element of run_med if we wish to.
+   }
+return (run_median)                    # Returns the content of run_med vector (Running medians vector - the desired output)
+}
+
+# Let us test the above function
+
+input1 = c(1,2,3,4,5,6,7,8,9)     # This is the input vector to test the function.
+output1 = median_running(input1)  # We're passing input1 as parameter to function median_running
+output1                           # This displays the running medians vector
+
+
+input2 = c(7,16,23,43,7,0,98)     # This is the input vector to test the function.
+output2 = median_running(input2)  # We're passing input1 as parameter to function median_running
+output2                           # This displays the running medians vector
+
+
+## Question 4
+
+## Assumption : I'm creating a function, which gives number of primes between two numbers a & b - without including a & b
+
+install.packages("schoolmath")     # This installs the package "schoolmath"
+library (schoolmath)               # This loads the package schoolmath
+ 
+is.prim(3)                         # To check the function 'is.prim'. This is returning boolean values
+is.prim(7)
+
+a = 1                              # Let us initialize the first number to 1
+b = 1                              # Let us initialize the second number to 1
+
+prime_count = function(a,b)        # Let us define the function to count the prime numbers between a and b . With both 'a' and 'b' excluded.
+{
+  i =  ifelse(a<=b,a,b)            # The variable 'i' gets the lowest value among a and b
+  j =  ifelse(b>a,b,a)             # The variable 'j' gets the highest value among a and b
+  i = i + 1                        # The value of 'i' will be set to 'a+1'. Since we don't want to include a
+  j = j-1                          # The value of 'J' will be set to 'b-1'. Since we don't want to include b
+  counter = 0                      # Let us define a variable counter, which counts the number of prime numbers
+      for(i in i:j)                # Let us iterate using for loop to check every number between a and b, if they're prime
+   {
+    ifelse(is.prim(i)=='TRUE',(counter = counter+1),(counter = counter)) # If the number is prime, increment counter by 1 else leave it the way it is
+    }
+  return (counter)                                                       # Return the value of counter. This is our number of prime numbers between a and b
+}
+
+# Let us test the function with sample inputs
+
+p1 = prime_count (1,100)     # The numbers 1,100 are passed as paremeters
+p1                           # The number of primes between 1 and 100 is displayed ( 1 and 100 - not included)
+p2 = prime_count (100,1000)  # The numbers 100,1000 are passed as paremeters
+p2                           # The number of primes between 100 and 1000 is displayed (100 and 1000 - not included)
+
+
+## Question 5
+
+
+dice_roll =  function ()                        # We have defined the function dice_roll. This doesn't have any arguments                                              
+{
+  x = sample(c(1,2,3,4,5,6),2,replace=T)        # We have used the sample function. In the first argument - We have given the vector of all possible values
+                                                # In the second argument, we have given the sample size to be taken each time
+                                                # We have indicated replace = 'T' as the same value is possible in our example.
+                                              
+  label = paste("The two values are ",x[1], "and",x[2], ", so the sum of them is " , x[1]+x[2]) # We have used the paste function to display the result in desired format.
+  return (label)                                                                                # To return the label.
+}
+
+# Let us test the function created 
+
+trail1 = dice_roll()  # We are calling the function dice_roll and storing the output in trail1
+trail1                # Display the contents of trial1 
+
+trail2 = dice_roll() # We are calling the function dice_roll and storing the output in trail2
+trail2               # Display the contents of trial2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
