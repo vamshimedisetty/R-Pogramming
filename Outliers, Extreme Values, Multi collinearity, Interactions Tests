@@ -1,0 +1,138 @@
+## Vamshi Medisetty
+
+## Let us install and load the necessary packages ##
+
+install.packages('car')
+install.packages('MASS')
+install.packages('ISLR')
+
+
+library(car) 
+library(MASS) 
+library(ISLR) 
+
+## Let us examine the required dataset ##
+
+View(College)
+attach(College)   # To attach the dataset. So that variable names can directly be used.
+
+## Let us perform the basic regression now ##
+## This also called Ordinary Least Squared Regression ##
+
+reg1=lm(Apps~.,data=College)
+summary(reg1)                 # To check the various statistics of the regression
+
+
+## Let us also plot the regression 
+
+opar=par()
+par(mfrow=c(2,2))
+plot(reg1)
+par(opar)
+
+## We clearly observe that the varience is not constant
+## Non-lineraity is apparent
+## Many extreme values are affecting the regression
+
+## Let us prove the above points by performing tests ##
+
+ncvTest(reg1) # p = 8.439268e-118 
+
+## The null hypothesis of the nCV test is rejected
+## i.e., Varience is not constant here
+
+
+## Let us now check for the extreme values (Cook's distnace) ##
+
+
+cut_off = 4/nrow(College)            # Cook's distnace cutoof is defined
+z = round(cooks.distance(reg1),4)    # Round off the cook's distnace of the linear model constructed above 
+View(z[z>cutoff])                    # Take the subset of influential records and show them
+                                     # We observe that a total of 51 records are potential outliers
+
+plot(reg1,which=4,cook.levels = cut_off) 
+abline(h=cut_off,col="red")              # To check the graph of the extreme values
+
+
+## Let us create a vector with the differntial weights, so that this can be used to enhance the results
+
+weigthed = ifelse(z <= cutoff,1,cutoff/z)       # This is the vector whch holds the differntial weights
+reg2 = lm(Apps~.,weights=weigthed,data=College) # This is weighted regression, where the extreme values(outliers) have the low weight given in regression 
+summary(reg2)                                   # We see better statistics for the fit
+
+## Let us examine this plot
+
+opar=par()
+par(mfrow=c(2,2))
+plot(reg2)
+par(opar)
+## We observe that this is a relatively better plot
+
+## Let us now check Multi-Collinearity ##
+
+multi_coll =vif(reg2)           # This gives the results for Multi-cllinearity test
+                                # Value greater than 4 indicates multi-collinaerity and values greater than that signify higher trend (correlation)
+View(multi_coll[multi_coll>4])  # This gives only the variables, which are multi-collinear
+                                # We observe very high values for Enroll, F.Undergrad. So, let us elimiate these varaibles, moving forward
+
+
+reg3 = update(reg2,~.-Enroll-F.Undergrad,data=College)        # The linear regression above should be updated with the current finding
+summary(reg3)                                                 # The fit for thr new regression equation is now checked
+                                                              # We observe better summary statistics
+
+## Let us plot and check this now
+
+opar=par()
+par(mfrow=c(2,2))
+plot(reg3)
+par(opar)
+
+## We see better results than than reg2
+
+## Let us now check for the BoxCox test 
+
+boxCox(reg1, family="yjPower", plotit = TRUE) # We observe that the Lambda value is approxiately equal to 0.5
+
+## Let us try building the regression equation with thsi transformation
+
+reg_sqrt = update(reg3,sqrt(Apps) ~., data=College) # Here we have used depedndent variable to the power of lambda
+summary(reg_sqrt)                                   # We observe that the summary statistics are not better than the previous regression model (reg3)
+
+
+## Let us now check boxtidwell - to check if idependent variables should be transformed (this works only for positive independent variables)
+## After a lot of trial and error, the estimates are obtained
+
+boxTidwell(Apps ~.-Enroll-F.Undergrad-Private-Outstate-Terminal-S.F.Ratio-perc.alumni-Expend-Grad.Rate-D,data=College)
+
+## Let us now frame an equation - updated regression equation with box tidwell results
+
+
+reg5= update(reg3,~.+I(Personal^4)+I(Top25perc^5)+I(Top10perc^4)+I(Books^-36)+
+               I(Room.Board^2+I(PhD^19)),data=College)
+
+summary(reg5)   ## Even though R square is increased slightly, Box Tidwell can/can't be considered. Let's omit these.
+
+
+## Let us now check for intercations
+
+# checking for interactions
+
+res_inter =step(reg3, ~.^2)      # Testing for interactions
+res_inter$anova                  # checking results
+ 
+reg_Final= update(reg3,~.+ Accept:Expend+Top10perc:Grad.Rate ,data=College) # This forms our final equation
+summary(reg_Final)
+
+## Let us plot the final regression equation
+
+opar=par()
+par(mfrow=c(2,2))
+plot(reg_Final)
+par(opar)
+
+
+
+
+
+
+
