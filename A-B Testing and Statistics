@@ -1,0 +1,507 @@
+
+## Vamshi Medisetty
+## UConn Id : 2348122
+
+## To set some values to graphical parameters
+
+opar = par()
+opar
+
+
+##____________________________________________ Question 1 ___________________________________________________________________________________________________ ##
+
+## We observe that Task1 and Task2 are in series
+## Let us represent the time completeion in a vector 'V1'
+
+task1 = runif(10000,min=5,max=9)  ## runif with min 5 and max 9
+task2 = rnorm(10000,mean=7,sd=2)  ## rnorm with mean 7 and sd 2
+
+v1 = task1 + task2 # Since the tasks are connected in series. Task2 starts only after Task1 gets completed.
+
+task3 = rexp(10000,rate = 8)       ## rexp with rate 8
+task4 = runif(10000,min=3,max=10)  ## runif with min 3 and max 10
+
+v2 = task3+task4 # Since both the tasks are connected in series
+
+v = ifelse(v1>v2,v1,v2) ## The tasks v1 and v2 are in parallel. The one that takes the maximum time determines the total completion time.
+v                       ## The total completion time 
+
+ ## a
+Mean_completion_time = mean(v)
+Median_completion_time = median(v)
+
+Mean_completion_time      ## Displays mean completion time
+Median_completion_time    ## Dsplay median completion time
+
+
+##b
+v_sub = v[v<=12]                    ## Subset of v which has value less than 12
+Prob_12 = (length(v_sub)/length(v)) ## probability of tasks getting completed in 12 hours
+Prob_12                     
+
+
+##c
+
+plot(density(v))                  ## The plot of total completion time's density
+polygon(density(v),col='green')   ## With extra attribute of colour
+
+
+
+
+##____________________________________________ Question 2 ___________________________________________________________________________________________________ ##
+
+## Let us calculate  Profit for Stock_A
+
+qnty_A  = 30
+Price_A = 95
+return_A = rnorm(1000,mean=0.1,sd=0.05)
+Profit_A = return_A*Price_A*qnty_A
+
+
+## Let us calculate Profit for Stock_B
+
+qnty_B  = 15
+Price_B = 100
+return_B = runif(1000,min=-0.1,max=0.15)
+Profit_B = return_B*Price_B*qnty_B
+
+## Let us calculate Profit for Stock_C
+
+qnty_C  = 25
+Price_C = 25
+return_C = runif(1000,min=-0.15,max=0.25)
+Profit_C = return_C*Price_C*qnty_C
+
+
+## Let us calculate Profit for Stock_D
+
+qnty_D = 50
+Price_D = 50
+return_D = rnorm(1000,mean=0.2,sd=0.3)
+Profit_D = return_D*Price_D*qnty_D
+
+Profit = Profit_A + Profit_B + Profit_C + Profit_D            # The total profit value is sum of all profits
+
+#A -  total expected profit on your investment
+
+Total_Exp_Profit = mean(Profit)
+Total_Exp_Profit
+
+# median and standard deviation of your total expected profit
+
+med_profit = median(Profit)
+sd_profit  = sd(Profit)
+med_profit                 # To display the median of profit
+sd_profit                  # To display the sd of profit
+
+# the transaction fee for purchasing these stocks is $100
+Profit=Profit-100
+
+# probability that you don`t lose money
+
+prob1 =length(Profit[Profit>0])/length(Profit)
+prob1
+
+#Probability that you will make atleast 1500 profit
+
+prob2 =length(Profit[Profit>1500])/length(Profit)
+prob2
+
+
+
+
+##____________________________________________ Question 3 ___________________________________________________________________________________________________ ##
+
+
+## Let try to calculate version A's conversion rate.
+
+
+Visits_A = c(7823,5611,5092,16407,4072,2802,3277,8159,5331,5217,15922,4360)
+
+Completion_A = c(796,541,533,1001,416,268,323,808,517,542,1099,415)
+
+Completion_Rate_A = Completion_A / Visits_A
+
+Completion_Rate_A
+
+## Let try to calculate version B's conversion rate.
+
+Visits_B = c(2910,3049,2775,3266,1980,1512,1408,2709,2802,2720,3119,2091)
+
+Completion_B = c(289,262,298,191,188,129,134,258,258,272,205,182)
+
+Completion_Rate_B = Completion_B / Visits_B
+
+Completion_Rate_B
+
+## Let us try to calculate various statistics of A and B
+
+mean(Completion_Rate_A) # 0.09369472
+sd(Completion_Rate_A) # 0.01386441
+
+mean(Completion_Rate_B) # 0.08888581
+sd(Completion_Rate_B) # 0.0141004
+
+## We find that mean(A) is higher and sd(A) is lower.
+## 'A' is the best version to roll out
+
+## Let us try to see this in the form of a plot
+
+Delta_Conv_rates  = Completion_Rate_A - Completion_Rate_B  ## The differnce in conversion rates is taken into a vector
+                                                           ## The points will be above X-axis if A's completion rate is higher
+
+plot(Delta_Conv_rates,col='blue',pch=19)
+abline(h = 0,lwd=3,col='green')  
+
+## We see that 11 out of 12 points are above zero mark. 'A' wins by a great margin
+## We see that the delta conversion rates are above the zero mark --
+## Making 'A' has better conversion rate on 11 occasions out of 12. This makes 'A' the best candidate.
+
+
+
+## Let us also take a 2 sampled test to statistically test this
+
+method           =  rep(c("A","B"),c(12,12))                   ## The website version is taken in this vector
+Conversion_Rate  =  c(Completion_Rate_A,Completion_Rate_B)     ## Their respective conversion rates are captured here
+x                = data.frame(method,Conversion_Rate)          ## Make these two vectors a data frame
+View(x)                                                        ## View the contents of data frame
+
+
+
+## Hypothesis
+## H0 : There is no correlation between columns - 'method' and 'Conversion rate'. (Meaning : There is no impact on conversion rate by method)
+## Ha : There is correlation between columns - 'method' and 'Conversion rate'.    (Meaning : There is impact on conversion rate by method)
+
+## Now let us test the hypothesis:
+
+
+x1 = x[x$method == 'A',]        ## This creates a subset of all A's
+x2 = x[x$method== 'B',]         ## This creates a subset of all B's
+
+tstat = abs(mean(x1$Conversion_Rate) - mean(x2$Conversion_Rate))  ## The mean value of difference is our test statistic
+tstat                                         ## To check the value of tstat
+
+
+pop = x$Conversion_Rate                       ## the contents of vector x$Conversion_rate are stored in vector 'pop'
+pop                                           ## to check the contents of pop
+sample(pop)                                   ## This shuffles the entries of vector
+
+## Now let us create a function which randomly shuffles the entries of pop vector 
+## and calculates the mean first half and second half's difference - out sstat if interest
+
+f1 = function()
+{
+  x = sample(pop)           # This shuffles the entries of vector
+  y1 = mean(x[1:12])        # The mean of first half is calculated
+  y2 = mean(x[13:24])       # The mean of second half is calculated
+  sstat = abs(y1-y2)        # the absolute difference of both is our sample statistic of interest
+  return(sstat)             # the function returns the sstat.
+}
+
+
+sdist = replicate(10000,f1())       # Call the function 10000 times to populate vector sdist
+sdist                               # Check the contents of sdist
+length(sdist)                       # Check the length of sdist.
+
+
+plot(density(sdist))                # Plot of sdist - to check distribution        
+polygon(density(sdist),col='green') # Plot with distribution with additional colour attribute.
+
+abline(v=tstat,col='red')           # Our tstat is represented as line
+
+j = sdist[sdist>=tstat]             # sdist vales, which are greater than tstat are taken to test the p-value.
+# Since we have taken the absolute difference value, we need not go for two tailed test.
+j                                   # To check the entries in j
+
+pvalue = length(j)/10000            # The p-value is computed
+pvalue                              # The p-value is : 0.4069
+
+## We observe that the pvalue is greater than the alpha value (0.05)
+## So, We reject the null hypothesis 
+## Meaning : There exists correlation between the values of 'Method' and 'Conversion rate'
+## Hence we see that if method employed is 'A', the conversion rate is differnt from method 'B'
+## Hence we also statistically determined the approach 'A' is giving better conversion rate.
+
+
+
+
+
+
+##____________________________________________ Question 4 ___________________________________________________________________________________________________ ##
+
+
+health <- read.csv('C:/Users/vamsh/Desktop/R/Assignment 7/Health.csv')   # Read the values into a data frame.
+health   
+
+## The probability distribution of ofp column is stated as Poission
+## We'll imagine a population based on this column.
+## Let us check the mean of this column
+
+## The column health$ofp  (vector in 'R' terminology) now becomes our sample
+## Let us imagine a population from this sample to test our hypothesis.
+## Let us define the test statistic 
+
+
+## Hypothesis  H0 : The mean of 'ofp' is 5.5
+##             Ha : The mean of 'ofp' is not equal to 5.5
+
+tstat = mean(health$ofp)
+tstat
+
+f1 = function()
+{
+  s1 = rpois(length(health$ofp),5.5)                              # Sample s1 is taken, with hypothesized mean and length(health$ofp) as sample size
+  sstat = mean(s1)                                                # The samples's mean is computed and returned                                            
+  return(sstat) 
+}
+
+ 
+sdist = replicate(10000,f1())         # Function f1 is replicated 10000 times
+sdist                                 # Display the vector sdist
+#length(sdist)                        
+
+
+plot(density(sdist))                    # to check the sampling distribution
+polygon(density(sdist),col='green')     # to check the sampling distribution
+abline(v=tstat,col='red')               # This line is our 'ofP' column's observed mean
+                                        ## We don't even see the line in our plot. It is not even visible
+                                        ## Thus, it is logical to approximate that the p-value is very negligible
+                                        ## Thus, alpha is much greater than p
+                                        ## Hence, we reject the null hypothesis and default to alternate hypothesis
+                                        ## Thus, the mean of 'ofP' column is no equal to 5.5
+
+
+
+
+
+##____________________________________________ Question 5 ___________________________________________________________________________________________________ ##
+
+
+## Assuming Normality
+
+# Let us read the contents of the file into data frame 'walmart'
+
+walmart <- read.csv('C:/Users/vamsh/Desktop/R/Assignment 7/walmart.csv') 
+head(walmart)                                                                # Display  first few lines of data frame walmart           
+
+walmart_nh = walmart[walmart$IsHoliday == 'FALSE' & walmart$Store == 1,]     # Create a subset of our interest - Not holiday and Store no. 1
+
+## Confidence intervals for means
+
+n = length(walmart_nh$Weekly_Sales)                                          # The length is stored in variable 'n'
+m = mean(walmart_nh$Weekly_Sales)                                            # The mean is assigned to variable 'm'
+sd = sd(walmart_nh$Weekly_Sales)                                             # The sd is assigned to variable 'sd'
+
+## Now let us creates samples  and returns the mean of samples by imagining the population.
+
+f2 = function()              ## Let us create a function that computes and returns the mean of samples 
+{ 
+  s1 = rnorm(n,m,sd)         
+  x = mean(s1)               ## The mean of samples is computed and returned
+  return(x)
+}
+
+sdist = replicate(10000,f2())                         ## We're creating a vector with all sample means
+#plot(density(sdist))                                 ## Let us check the plot. This gives the sampling distribution of sample mean.
+conf_int1 = quantile(sdist,probs = c(0.025,1-0.025))  ## This gives the 95% confidence interval.
+conf_int1
+ 
+
+## Confidence intervals for median
+## Let us create samples where we take means of samples, with sample means = median of Weekly sales
+
+n = length(walmart_nh$Weekly_Sales)        ## The length is stored in variable 'n'
+m = median(walmart_nh$Weekly_Sales)        ## The median is assigned to variable 'm'
+sd = sd(walmart_nh$Weekly_Sales)           ## The sd is assigned to variable 'sd'
+
+
+f2 = function()             
+{
+  s1 = rnorm(n,m,sd)                       ## The median of weekly sales is used as mean for this sample.
+  x = mean(s1)                            
+  return(x)
+}
+ 
+sdist = replicate(10000,f2())                              ## We're creating a vector with all sample means
+#plot(density(sdist))                                      ## Let's check the plot
+conf_int2 = quantile(sdist,probs = c(0.025,1-0.025))       ## Let's check the 95% confidence interval.
+conf_int2                               
+
+## Confidence intervals for standard deviation
+## Let us create samples where with sample means =mean and sd =sd of weekly sales
+
+n = length(walmart_nh$Weekly_Sales)  ## The length is stored in variable 'n'
+m = mean(walmart_nh$Weekly_Sales)    ## The mean is assigned to variable 'm'
+sd = sd(walmart_nh$Weekly_Sales)     ## The sd is assigned to variable 'sd'
+
+## Let us create function which returns the standard deviation of samples (From the imagined population)
+
+f2 = function()
+{
+  s1 = rnorm(n,m,sd)                 ## We used mean = mean of weekly sales and sd = sd of weekly sales
+  x = sd(s1)                         ## sd of samples is our statistic of interest
+  return(x)
+}
+
+sdist = replicate(10000,f2())            ## The sds returned are stored in vector - sdist
+# plot(density(sdist))                   ## Let us check the plot
+conf_int3 = quantile(sdist,probs = c(0.025,1-0.025)) ## Let us calculate the 95% confidence interval
+conf_int3
+
+
+## Let us now use the Bootstrap
+## 95% Confidence intervals for means
+
+f3 = function()
+{
+  s1 = sample(x=walmart_nh$Weekly_Sales,size=(length(walmart_nh$Weekly_Sales)),replace = T) ## We are not assuming normality here.
+  x = mean(s1)                                                                              ## Mean of the sample is our statistic of interest
+  return(x)                                                                                 ## mean is being returned
+}
+
+sdist = replicate(10000,f3())                            ## The function is repeated 10000 times
+#plot(density(sdist))                                    ## To check the sampling distribution of sample means
+conf_int4 = quantile(sdist,probs = c(0.025,1-0.025))     ## To compute the 95% confidrnce intervals
+conf_int4
+
+
+## 95% Confidence intervals for medians
+
+f3 = function()
+{
+  s1 = sample(x=walmart_nh$Weekly_Sales,size=(length(walmart_nh$Weekly_Sales)),replace = T) ## We are not assuming normality here.
+  x = median(s1)                                                                            ## Median of the sample is our statistic of interest
+  return(x) 
+} 
+
+sdist = replicate(10000,f3())                                 ## The function is repeated 10000 times
+#plot(density(sdist))                                         ## To check the sampling distribution of sample medians
+conf_int5 = quantile(sdist,probs = c(0.025,1-0.025))          ## To compute the 95% confidrnce intervals
+conf_int5
+
+
+## 95% Confidence intervals for standard deviations
+
+f3 = function()
+{
+  s1 = sample(x=walmart_nh$Weekly_Sales,size=(length(walmart_nh$Weekly_Sales)),replace = T) ## We are not assuming normality here.
+  x = sd(s1)                                                                                ## Sd of the sample is our statistic of interest
+  return(x)
+}
+
+sdist = replicate(10000,f3())                             ## The function is repeated 10000 times
+#plot(density(sdist))                                     ## To check the sampling distribution of sample sds
+conf_int6 = quantile(sdist,probs = c(0.025,1-0.025))      ## To compute the 95% confidrnce intervals
+conf_int6
+
+
+##____________________________________________ Question 6 ___________________________________________________________________________________________________ ##
+
+
+
+
+## Let us create a two sample test to test this hypothesis.
+
+## Let us create a data frame with with the information given. 
+
+
+Age_Less_Than_60 = c(TRUE,TRUE ,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE ,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE) 
+Value = c(75,77,80,69,73,76,78,74,75,81,75,80,68,74,77,71,73,75,80,77,78,72,69,71) ## We have created two vectors with iinformation given
+ 
+x = data.frame(Age_Less_Than_60,Value) ## This statement clubs the vectors together to create a data frame. 
+
+View(x)  # To check the contents of x.
+
+## Let us frame a hypothesis before going for two sampled test.
+
+
+## Hypothesis
+## H0 : There is no correlation between columns - 'Age_Less_Than_60' and 'Value'
+## Ha : There is correlation between columns - 'Age_Less_Than_60' and 'Value'
+
+## Now let us test the hypothesis:
+
+
+x1 = x[x$Age_Less_Than_60 == 'FALSE',]        ## This creates a subset of values of age < 60
+x2 = x[x$Age_Less_Than_60 == 'TRUE',]         ## This creates a subset of values of age > 60
+
+tstat = abs(mean(x2$Value) - mean(x1$Value))  ## The mean value of difference is our tese statistic
+tstat                                         ## To check the value of tstat
+
+
+pop = x$Value                                 ## the contents of vector x$value are stored in vector 'pop'
+pop                                           ## to check the contents of pop
+sample(pop)                                   ## This shuffles the entries of vector
+
+## Now let us create a function which randomly shuffles the entries of pop vector 
+## and calculates the mean first half and second half's difference - out sstat if interest
+
+f1 = function()
+{
+  x = sample(pop)           # This shuffles the entries of vector
+  y1 = mean(x[1:12])        # The mean of first half is calculated
+  y2 = mean(x[13:24])       # The mean of second half is calculated
+  sstat = abs(y1-y2)        # the absolute difference of both is our sample statistic of interest
+  return(sstat)             # the function returns the sstat.
+}
+
+
+sdist = replicate(10000,f1())       # Call the function 10000 times to populate vector sdist
+sdist                               # Check the contents of sdist
+length(sdist)                       # Check the length of sdist.
+
+
+plot(density(sdist))                # Plot of sdist - to check distribution        
+polygon(density(sdist),col='green') # Plot with distribution with additional colour attribute.
+
+abline(v=tstat,col='red')           # Our tstat is represented as line
+
+j = sdist[sdist>=tstat]             # sdist vales, which are greater than tstat are taken to test the p-value.
+                                    # Since we have taken the absolute difference value, we need not go for two tailed test.
+j                                   # To check the entries in j
+
+pvalue = length(j)/10000            # The p-value is computed
+pvalue                              # The p-value is : 0.1369
+
+## Considering our alpha value = 0.005 < 0.1369 --> We accept the Null hypothesis.
+## There is no correlation between the 'Age_Less_Than_60' and 'Value'.
+## Meaning : The claim that older customers are given less french fries is not valid for alpha value of 0.05.
+
+
+
+
+##____________________________________________________________________________________________________________________________________________________________ ##
+##____________________________________________________________________________________________________________________________________________________________ ##
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
