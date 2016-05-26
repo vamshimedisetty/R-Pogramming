@@ -1,0 +1,192 @@
+## Vamshi Medisetty ##
+## UConn Id : 2348122 ##
+## Assignment - 9 ##
+
+library(bbmle)
+
+##_______________________________________________ Problem 1  __________________________________________________________________________________________##
+
+# Examine Corn Dataset
+
+Corn <- read.csv('C:/Users/vamsh/Desktop/R/Assignement 9/DataSets/Corn.csv')
+attach(Corn)
+View(Corn)    # To check the contents of the data frame.
+
+
+# Create a linear regression model
+
+reg1 = lm(yield~nitrate)                                 ## Linear Regression model
+reg1                                                     ## Check the results of the linear model
+
+Corn[,'linear'] = 51.52*(Corn$nitrate) + (6148.50)       ## Adding the results of linear model into the dataframe - by creating 'linear' column.
+
+View(Corn)
+
+
+
+
+## Let us define the Likelilhood function
+
+LLVon = function(a0,a1,s)
+{
+  x = Corn$yield - a0*(1 - exp(1-a1*Corn$nitrate))     # Error term's equation
+  LLSum = sum(dnorm(x, mean=0 ,sd=s,log = T))          # Normally distributed with mean = 0 and fixed std deviation     
+  return(-1*LLSum)                                     # mle minimizes - not maximizes - so return '-1'
+  
+}
+
+
+
+## Let us now apply the mle2 function to determine the optimal population parameters
+## We'll also provide start / lower / upper values here
+
+
+res1=mle2(minuslogl=LLVon,start=list(a0=mean(Corn$yield),a1=0,s=1000), lower=c(a0=-Inf,a1=-Inf,s=0),method="L-BFGS-B")
+summary(res1)
+
+
+
+## Let us add the von_growth results into data frame
+
+Corn[,'von_growth'] =  7725.1*(1-exp(1-(0.2574*Corn$nitrate)))
+
+
+
+#Let us create a function, to assess the various metrics of both the models
+
+num_metrics = function(a,m) 
+{ 
+  metrics = c(MAD=0,MSE=0,MAPE=0,MPSE=0,R2=0) 
+  metrics[1] = mean(abs(a-m)) 
+  metrics[2]= mean((a-m)^2) 
+  metrics[3]= mean(abs((a-m)/a)) 
+  metrics[4]= mean(((a-m)/a)^2) 
+  SST = sum((a-mean(a))^2) 
+  SSE = sum((a-m)^2) 
+  metrics[5] = 1-(SSE/SST) 
+return(metrics) 
+}
+
+# The metrics for Linear model
+
+num_metrics(yield,linear)
+
+# The metrics for Von growth model
+
+num_metrics(yield,von_growth)
+
+
+
+
+##_________________________________________________________   Problem 2    ___________________________________________________________##
+
+
+health <- read.csv('C:/Users/vamsh/Desktop/R/Assignement 9/DataSets/Health.csv')   # The dataset is brought into R environment
+View(health)                                                                       # To check the dataset's contents
+
+
+
+## Let us define the Log likelihood function.
+
+LLpoiszero = function(a0,a1,a2,b0,b1,b2,b3)
+{ 
+  m = a0+a1*health$numchron+a2*health$male
+  n = b0+b1*health$numchron+b2*health$employed+b3*health$married
+  p = exp(m)/(1+exp(m))
+  l = exp(n)
+  L = ifelse(health$ofp==0,p+((1-p)*dpois(0,l)),(1-p)*dpois(health$ofp,l))  # Since this is zero inflated poission distribution, the zero can be due to healthy patient
+                                                                            # and the patient who is not healthy but doesn't visit the physician.
+  LLsum = sum(log(L))  
+  return(-1*LLsum)
+}
+
+## Let us now frame the MLE function with start values specified.
+
+res_poiszero = mle2(minuslogl = LLpoiszero, start = list(a0=0,a1=0,a2=0,b0=0,b1=0,b2=0,b3=0))
+                      
+summary(res_poiszero)
+
+
+# Let uas add the columns based  on the results obtained
+# The column p is added here
+
+m = -1.1971 - 0.5429*(health$numchron) + 0.3734*(health$male)
+p = exp(m)/(1+exp(m))
+health[,'p'] = p
+
+# The column n is added here
+n = 1.6770 + 0.1495*(health$numchron) + 0.0490*(health$employed) - 0.0579*(health$married)
+l= exp(n)
+health[,'l'] = l
+
+# Let us add the final column of the predicted values
+
+L = ifelse(health$ofp==0,(length(health$p)*p)+((1-p)*rpois(n = length(health$ofp),lambda = exp(n))),(1-p)*rpois(n = length(health$ofp),lambda = exp(n)))
+health[,'L'] = L
+
+View(health)
+# Let us check the accuracy of results by plotting the findings
+
+plot(density(health$ofp))
+lines(density(health$L),col = 'blue')
+
+
+
+
+##_____________________________________________________ Problem 3 __________________________________________________________________________##
+
+
+spending = read.csv('C:/Users/vamsh/Desktop/R/Assignement 9/DataSets/spending.csv')  # Read the data into R environment
+View(spending)                                                                       # View data
+
+# Framing the Log likelihood equation
+
+attach(spending)
+
+LLreg_spending <- function(a,t,b,s1,s2)
+{
+  # Calculating the error using the equation given
+  m1 <- amount-a
+  m2 <- amount-a-b*(age-t)
+  LL <- ifelse(age <= t,dnorm(m1,0,s1,log = T),dnorm(m2,0,s2,log = T))
+  LLsum <- sum(LL)
+  return((-1)*LLsum)
+}
+
+
+
+# Using the mle function to maximize log likelihood
+# Set the start values a0 = mean(amount), s1=1000 and s2=1000
+
+result2 <- mle2(minuslogl = LLreg_spending, start = list(a= mean(amount),t= 25,b= 0,s1= 1000,s2= 1000),
+                lower = c(a= 0,t= 0,b= -Inf,s1= 0.1,s2= 0.1), method= "L-BFGS-B")
+
+
+summary(result2)
+
+
+spending[,'predicted'] = ifelse(spending$age<=33.9,spending$amount-27.742903,spending$amount-27.742903+ 4.338410 *(spending$age-33.900852))
+View(spending)
+
+# To check the numeric metrics
+
+num_metrics = function(a,m) 
+{ 
+  metrics = c(MAD=0,MSE=0,MAPE=0,MPSE=0) 
+  metrics[1] = mean(abs(a-m)) 
+  metrics[2]= mean((a-m)^2) 
+  metrics[3]= mean(abs((a-m)/a)) 
+  metrics[4]= mean(((a-m)/a)^2)  
+  return(metrics) 
+}
+
+
+# The metrics for given model
+
+num_metrics(spending$amount,spending$predicted)
+
+
+##________________________________________________________________________________________________________________________________________________##
+
+
+
