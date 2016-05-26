@@ -1,0 +1,58 @@
+## Assignment 4
+## Vamshi Medisetty , UConn Id : 2348122
+
+used_cars <- read.csv("C:/Users/vamsh/Desktop/R/usedcars.csv") # Reading data into R
+used_cars # To check the data of used_cars
+
+table(used_cars$year ) # This gives frequency tables grouped by  year
+table(used_cars$model) # This gives frequency tables grouped by model.
+
+table (used_cars$year,used_cars$model) # This gives the frequency table grouped by year and model.
+                                       # We see the maximum cars available for year:2010, model:SE
+
+used_cars_subset = used_cars[used_cars$price>12960 & used_cars$price<21900 ,] # This creates a subset of used_cars and assigns it to dataframe used_cars_subset 
+used_cars_subset                                                              # To display the contents of the subset
+
+
+plot(x=used_cars_subset$mileage,y=used_cars_subset$price,col='tomato3',pch=19,xlab = 'Mileage', ylab = 'Price') # This creates a plot of mileage and price of used_cars data frame with appropriate labels, in colour 'tomato3'
+abline(v= mean(used_cars_subset$mileage),lwd=3,col="blue")                                                      # This gives a line informing about the mean of mileage in blue colour
+abline(v= quantile(used_cars_subset$mileage,probs = 0.25) ,lwd=3,col='yellow')                                  # This gives a line informing about the 25th percentile of mileage in yellow col
+abline(v= quantile(used_cars_subset$mileage,probs = 0.80) ,lwd=3,col='green')                                   # This gives a line informing about the 80th percentile of mileage in green col
+label1 = paste("Mean Mileage = ", mean(used_cars_subset$mileage))                                               # We created label1 - using paste function to label the mean line.
+label2 = paste("25th Percentile Mileage = ", quantile(used_cars_subset$mileage,probs = 0.25))                   # We created label2 - using paste function to label the 25th percentile line.
+label3 = paste("80th Percentile Mileage = ", quantile(used_cars_subset$mileage,probs = 0.80))                   # We created label3 - using paste function to label the 80th percentile line
+text(29000,16000,label1,srt = 90)                                                                               # Label1 is given an appropriate position in graph. 'srt = 90' rotates text by 90 degrees
+text(19600,16000,label2,srt = 90)                                                                               # Label2 is given an appropriate position in graph. 'srt = 90' rotates text by 90 degrees
+text(37000,16000,label3,srt = 90)                                                                               # Label3 is given an appropriate position in graph. 'srt = 90' rotates text by 90 degrees
+
+
+
+install.packages('dplyr')  # To install te package dplyr
+library(dplyr)             # To load the package dplyr
+library(help = dplyr)      # To check the details of library dplyr.
+
+ # Let us create a subset of used_cars for Sorting
+
+used_cars_subset2 = used_cars[,c("year", "model", "price")]     # This creates a subset of Used Cars with columns of our choice.
+arrange(used_cars_subset2, desc(year), desc(model),desc(price)) # This arranges - sorts the data in descending order of year,model and price.
+
+
+X1 <- group_by(used_cars,model,transmission)   # This groups the used_cars data frame by model and transmission and assigns to X1.
+summarize(X1,mean(price),median(price))        # This summarizes the mean and median prices of each group created
+
+
+
+
+used_cars$conservative = (used_cars$color == "Black" | used_cars$color == "White" | used_cars$color == "Gray" | used_cars$color == "Silver") # This creates column 'conservative' and define the condition - True if color in Black, White , Gray, Silver. Flase for any other color
+View(used_cars)  # To check the data frame used_cars
+
+
+# Let us create a symbols graph with Year on X-axis , Price on Y-axis and mileage to determine the size
+
+symbols(x = used_cars$year, y = used_cars$price,circles = used_cars$mileage) 
+
+
+
+
+
+
