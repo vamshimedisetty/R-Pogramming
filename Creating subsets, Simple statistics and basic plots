@@ -1,0 +1,29 @@
+
+## Let us import the package MASS
+
+library(MASS)                     # This loads the package MASS
+library(help =  MASS)             # To check information about package MASS
+View(survey)                      # Information of survey data frame will displayed
+mean(survey$Age)                  # This gives the mean value of Age in data frame Survey
+quantile(survey$Age,probs = 0.75) # This gives the 75th percentile value of Age in data frame Survey
+median(survey$Age)                # This gives the median value of Age in data frame Survey
+
+
+S1 = survey[survey$Exer == 'Freq',] # Subset S1 is created for those people who exercise frequently.
+View(S1)                            # The subset S1 can be viewed.
+
+median(S1$Age)                      # The median Age value of subset S1 is printed
+
+## To create a plot of Wr.Hnd, NW.Hnd of females in data frame survey
+
+S2 = survey[survey$Sex=='Female',]  # We created subset dataframe S2 for all females
+View(S2)                            # Data Frame S2 can be viewed
+plot(x = S2$Wr.Hnd, y=S2$NW.Hnd)    # This creates a plot with Wr.Hnd on X-axis and NW.Hnd on Y-axis for S2 subset.
+
+## To create a plot of Wr.Hnd, NW.Hnd of males in data frame survey
+
+S3 = survey[survey$Sex=='Male',]    # We created subset dataframe S2 for all males
+View(S3)                            # Data Frame S3 can be viewed
+plot(x = S2$Wr.Hnd, y=S2$NW.Hnd)    # This creates a plot with Wr.Hnd on X-axis and NW.Hnd on Y-axis for S3 subset.
+
+
